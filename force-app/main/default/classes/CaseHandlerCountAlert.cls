@@ -1,4 +1,4 @@
-public class caseHandlerCountAlert{
+public class CaseHandlerCountAlert{
     public static void CaseCounter(){
 
         List<AggregateResult> AggregateResultList = [SELECT AccountId, Account.Name name, COUNT(Id) co
@@ -17,7 +17,10 @@ public class caseHandlerCountAlert{
                     else if (false){
                         // Set Outgoing Email to Customer Success Managers
                         message.toAddresses = new String[] { 'test@test.com' };
-                    }   
+                    } 
+                    // Set Email Template
+                    //EmailTemplate templateId = [Select id from EmailTemplate where name = 'Template Name'];  
+                    //mail.setTemplateID(templateId.Id);
                     message.subject = 'Subject Test Message';
                     message.plainTextBody = 'Account name: ' + aggr.get('name') + ' has ' + (Integer)aggr.get('co') + ' cases opened in the last 8 days.';
                 Messaging.SingleEmailMessage[] messages =   new List<Messaging.SingleEmailMessage> {message};

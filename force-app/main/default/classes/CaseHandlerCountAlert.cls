@@ -3,9 +3,9 @@ public class CaseHandlerCountAlert{
 
         List<AggregateResult> AggregateResultList = [SELECT AccountId, Account.Name name, COUNT(Id) co
                             FROM Case
-                            WHERE CreatedDate = LAST_N_DAYS:50
+                            WHERE CreatedDate = LAST_N_DAYS:5
                             GROUP BY AccountId, Account.Name
-                            HAVING COUNT(Id)  >= 20];
+                            HAVING COUNT(Id)  >= 8];
 
         for(AggregateResult aggr:AggregateResultList){ 
 
@@ -18,7 +18,7 @@ public class CaseHandlerCountAlert{
                         // Set Outgoing Email to Customer Success Managers
                         message.toAddresses = new String[] { 'test@test.com' };
                     } 
-                    // Set Email Template
+                        // Set Email Template
                     //EmailTemplate templateId = [Select id from EmailTemplate where name = 'Template Name'];  
                     //mail.setTemplateID(templateId.Id);
                     message.subject = 'Subject Test Message';

@@ -14,7 +14,7 @@ public class CaseHandlerCountAlert{
                         // Set Outgoing Email to Implementation Coordinator
                         message.toAddresses = new String[] { 'test@test.com' };
                     }
-                    else if (false){
+                    else if (true){
                         // Set Outgoing Email to Customer Success Managers
                         message.toAddresses = new String[] { 'test@test.com' };
                     } 

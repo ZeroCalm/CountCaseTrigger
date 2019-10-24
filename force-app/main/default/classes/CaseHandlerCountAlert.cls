@@ -10,15 +10,15 @@ public class CaseHandlerCountAlert{
         for(AggregateResult aggr:AggregateResultList){ 
 
                 Messaging.SingleEmailMessage message = new Messaging.SingleEmailMessage();
-                    if(true){
+                    if(true){    // If Status = Transition
                         // Set Outgoing Email to Implementation Coordinator
                         message.toAddresses = new String[] { 'test@test.com' };
                     }
-                    else if (true){
+                    else if (true){  // If Status equals "Live" - Out Of Transition
                         // Set Outgoing Email to Customer Success Managers
                         message.toAddresses = new String[] { 'test@test.com' };
                     } 
-                        // Set Email Template
+                        // Set Email Template Id
                     //EmailTemplate templateId = [Select id from EmailTemplate where name = 'Template Name'];  
                     //mail.setTemplateID(templateId.Id);
                     message.subject = 'Subject Test Message';

@@ -10,12 +10,13 @@ public class CaseHandlerCountAlert{
         for(AggregateResult aggr:AggregateResultList){ 
 
                 Messaging.SingleEmailMessage message = new Messaging.SingleEmailMessage();
-                    if(true){    // If Status = Transition
-                        // Set Outgoing Email to Implementation Coordinator
+                    if(Account.Milestone1_Project__c.Implementation_Status__c == "Transition"){    // If Status = Transition
+                    //Account - ParentProject.Implementation_Status__c == "Transition"
+                        // Set Outgoing Email to Implementation Coordinator "Implementation.Consultalt (get api name)"
                         message.toAddresses = new String[] { 'test@test.com' };
                     }
-                    else if (true){  // If Status equals "Live" - Out Of Transition
-                        // Set Outgoing Email to Customer Success Managers
+                    else if (Account.Milestone1_Project__c.Implementation_Status__c == "CONVERSION"){  // If Status equals "Live" - Out Of Transition
+                        // Set Outgoing Email to Customer Success Managers - Public Group
                         message.toAddresses = new String[] { 'test@test.com' };
                     } 
                         // Set Email Template Id

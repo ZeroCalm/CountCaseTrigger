@@ -37,8 +37,8 @@ private List<String> getAddresses(){
             FROM User 
             WHERE id 
             IN (SELECT userorgroupid 
-            FROM groupmember
-            WHERE group.name = 'Customer Success Managers')];
+                FROM groupmember
+                WHERE group.name = 'Customer Success Managers')];
 
     Set<String> emailString = new Set<String>();
 

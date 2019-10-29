@@ -1,4 +1,4 @@
-trigger CaseHandlerCountAlert on SOBJECT (before insert) {
+trigger CaseHandlerCountAlert on SOBJECT (after insert) {
     List<AggregateResult> AggregateResultList = [SELECT AccountId, Account.Name name, COUNT(Id) co,  Milestone1_Project__c.id,
                                     Milestone1_Project__c.Implementation_status__c, Milestone1_Project__c.Client_Advisor_Email__c
                                     FROM Case
@@ -13,14 +13,14 @@ trigger CaseHandlerCountAlert on SOBJECT (before insert) {
 
                         Messaging.SingleEmailMessage message = new Messaging.SingleEmailMessage();
                         
-                            if(Milestone1_Project__c.Implementation_status__c == "Transition"){    
+                            if(Milestone1_Project__c.Implementation_status__c == 'LIVE - TRANSITION'){    
                                 // Set Outgoing Email to Implementation Coordinator
-                                //message.toAddresses = new String[] { smith.timothyh@gmail.com }; 
+                                //message.toAddresses = new String[] { 'test@test.com' }; 
                             }
-                            else if (Milestone1_Project__c.Implementation_status__c) == "Live"){  
+                            else if (Milestone1_Project__c.Implementation_status__c == 'Live'){  
                                 // Private method *** getAddresses() *** retrieves email address from Customer_Success_Managers Public Group
                                 
-                                //message.toAddresses = new String[] { "smith.timothyh@gmail.com" };
+                                //message.toAddresses = new String[] { 'test@test.com' };
                             } 
                         message.setSubject = 'Subject Test Message';
                         message.setPlainTextBody = 'Account name: ' + aggr.get('name') + ' has ' + (Integer)aggr.get('co') + ' cases opened in the last 8 days.';
@@ -29,11 +29,11 @@ trigger CaseHandlerCountAlert on SOBJECT (before insert) {
                     System.debug('Account Name: ' + aggr.get('name'));   
                 }            
                   
-                } 
+ 
 
 private List<String> getAddresses(){
     List<User> UserList =
-            [SELECT id, name, email, isactive, profile.name, userrole.name, usertype
+            [SELECT id, name, email
             FROM User 
             WHERE id 
             IN (SELECT userorgroupid 
@@ -44,10 +44,7 @@ private List<String> getAddresses(){
 
     for(User u: UserList){
         emailstring.add(u.email);
-        // System.debug(u.email);
     }   
-    //System.debug('The list ' + emailstring);
     return (emailString);
     }    
 }            
-}

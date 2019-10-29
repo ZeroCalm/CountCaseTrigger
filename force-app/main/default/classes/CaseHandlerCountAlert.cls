@@ -1,51 +1,28 @@
 public class CaseHandlerCountAlert{
 public static void CaseCounter(){
 
-    List<AggregateResult> AggregateResultList = [SELECT AccountId, Account.Name name, COUNT(Id) co, 
+    List<AggregateResult> AggregateResultList = [SELECT AccountId, Account.Name name, COUNT(Id) co,  Milestone1_Project__c.id mid,
+                                Milestone1_Project__c.Implementation_status__c mis, Milestone1_Project__c.Client_Advisor_Email__c
                                 FROM Case
                                 WHERE CreatedDate = LAST_N_DAYS:5
                                 GROUP BY AccountId, Account.Name
-                                HAVING COUNT(Id)  >= 8];
-                                //In Trigger.New
-                    /* I will need to query a sibling object
-                        Case. (___).  This is currently not possible
-                        to my knowledge.  I will query both children 
-                        from the account object as a solution
-                    */
-
-    Set<Id> idAccountSet = new Set<Id>();
-for(Case case : AggregateResultList){
-idAccountSet.add(case.AccountId);   
-}
-
-List<Account> accountList = [SELECT Id, (SELECT Id FROM ChildObjs) FROM Account WHERE Id = :idAccountSet];
-for(Account account : accountList)
-{
-    if(account.ChildObjs != null) {
-        
-        for(ChildObj childObjRec : account.ChildObjs)
-        {
-                //Code here for collectiong email
-        }
-    {
-}
-
-
-
-} 
-
-/*
+                                HAVING COUNT(Id)  >= 8
+                                WHERE Id IN :Trigger.new];
+                                
 
             for(AggregateResult aggr:AggregateResultList){ 
+system.debug(aggr);
 
+/*
                     Messaging.SingleEmailMessage message = new Messaging.SingleEmailMessage();
-                        if((aggr.get('status1') == "Transition"){    // If Status = Transition
-                            // Set Outgoing Email to Implementation Coordinator "Implementation.Consultalt "
-                            message.toAddresses = new String[] { Milestone1_Project__c.Client_Advisor_Email__c };
+                       
+                        if((aggr.get("mis") == "Transition"){    // If Status = Transition
+                            // Set Outgoing Email to Implementation Coordinator "Implementation.Consultant "
+                            //message.toAddresses = new String[] { smith.timothyh@gmail.com };
                         }
-                        else if ((aggr.get('status1') == "Live"){  // If Status equals "Live" - Out Of Transition
+                        else if ((aggr.get("mis") == "Live"){  // If Status equals "Live" - Out Of Transition
                             // Private method retrieves email address from Customer Success Managers
-                            message.toAddresses = new String[] { getAddresses() };
+                            //message.toAddresses = new String[] { "smith.timothyh@gmail.com" };
                         } 
                             // Set Email Template Id
                     //EmailTemplate templateId = [Select id from EmailTemplate where name = 'Template Name'];  
@@ -55,6 +32,7 @@ for(Account account : accountList)
                     Messaging.SingleEmailMessage[] messages =   new List<Messaging.SingleEmailMessage> {message};
                     Messaging.SendEmailResult[] results = Messaging.sendEmail(messages);
                 System.debug('Account Name: ' + aggr.get('name'));           
+*/            
             }
             } 
 
@@ -78,7 +56,7 @@ for(Account account : accountList)
             }    
             }
 
-*/
+
 
 
 

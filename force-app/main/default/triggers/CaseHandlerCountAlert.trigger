@@ -1,11 +1,11 @@
-trigger CaseHandlerCountAlert on SOBJECT (after insert) {
-    List<AggregateResult> AggregateResultList = [SELECT AccountId, Account.Name name, COUNT(Id) co,  Milestone1_Project__c.id,
-                                    Milestone1_Project__c.Implementation_status__c, Milestone1_Project__c.Client_Advisor_Email__c
+trigger CaseHandlerCountAlert on Case (after insert) {
+    List<AggregateResult> AggregateResultList = [SELECT AccountId, Account.Name name, COUNT(Id) co,  Project__r.id,
+                                    Project__r.Implementation_status__c, Project__r.Client_Advisor_Email__c
                                     FROM Case
-                                    WHERE CreatedDate = LAST_N_DAYS:5
+                                    WHERE CreatedDate = LAST_N_DAYS:5 AND Id IN :Trigger.New
                                     GROUP BY AccountId, Account.Name
                                     HAVING COUNT(Id)  >= 8
-                                    WHERE Id IN :Trigger.New];
+                                    ];
                                     
 
                 for(AggregateResult aggr:AggregateResultList){ 
@@ -22,8 +22,8 @@ trigger CaseHandlerCountAlert on SOBJECT (after insert) {
                                 
                                 //message.toAddresses = new String[] { 'test@test.com' };
                             } 
-                        message.setSubject = 'Subject Test Message';
-                        message.setPlainTextBody = 'Account name: ' + aggr.get('name') + ' has ' + (Integer)aggr.get('co') + ' cases opened in the last 8 days.';
+                        message.Subject = 'Subject Test Message';
+                        message.PlainTextBody = 'Account name: ' + aggr.get('name') + ' has ' + (Integer)aggr.get('co') + ' cases opened in the last 8 days.';
                         Messaging.SingleEmailMessage[] messages =   new List<Messaging.SingleEmailMessage> {message};
                         Messaging.SendEmailResult[] results = Messaging.sendEmail(messages);
                     System.debug('Account Name: ' + aggr.get('name'));   
@@ -40,11 +40,11 @@ private List<String> getAddresses(){
                 FROM groupmember
                 WHERE group.name = 'Customer Success Managers')];
 
-    Set<String> emailString = new Set<String>();
+    List<String> emailString = new List<String>();
 
     for(User u: UserList){
         emailstring.add(u.email);
     }   
     return (emailString);
     }    
-}            
+}

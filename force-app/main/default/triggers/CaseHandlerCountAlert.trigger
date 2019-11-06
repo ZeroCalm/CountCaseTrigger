@@ -1,5 +1,5 @@
 trigger CaseHandlerCountAlert on Case (after insert) {
- 		String messageToSend;
+ 	String messageToSend;
     List < String > ListOfMessages = new List < String > ();
     Set < Id > AcctIds = new Set < Id > ();
     List < String > clientEmail;
@@ -11,7 +11,7 @@ trigger CaseHandlerCountAlert on Case (after insert) {
         FROM Case
         WHERE CreatedDate = LAST_N_DAYS: 1
         GROUP BY AccountId, Account.Name
-        HAVING COUNT(Id) = 1
+        HAVING COUNT(Id) >= 3
     ];
 
     Map < Id, String > accountIdEmailmessageMap = new Map < Id, String > ();
@@ -46,49 +46,51 @@ trigger CaseHandlerCountAlert on Case (after insert) {
             
             
             String messageBody = accountIdEmailmessageMap.get(cl.AccountId);
+			System.debug('If Statement: ' + messageBody);
 			
-			System.debug('If Fired, CSM' + emailAdds);
-                System.debug('Resource Coord' + cl.Parent_Project_if_applicable__r.Resource_Coordinator_Email__c);
-                System.debug('If Fired, CSM' + cl.Parent_Project_if_applicable__r.Client_Advisor_Email__c);
 				
                 List<String> email = new List<String>();
-                email.add('smith.timothyh@gmail.com');
+            //    email.add('CustomerSuccessManagers@eyefinity.com');
+				email.add('tim.smith@vsp.com');
             Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
             mail.setSenderDisplayName('IT Support');
-            mail.setToAddresses(email);   //mailto:CustomerSuccessManagers@eyefinity.com
+            mail.setToAddresses(email);   
             mail.Subject = 'Multiple cases created alert message';
             mail.setPlainTextBody(messageBody);
 
-            if (messageToSend != null) {
+            if (messageBody != null) {
                 Messaging.sendEmail(new Messaging.SingleEmailMessage[] {
                     mail
                 });
             }
 		
+        
+
         } else {
 
-			System.debug(cl.Parent_Project_if_applicable__r.Resource_Coordinator_Email__c);
-            System.debug(cl.Parent_Project_if_applicable__r.Client_Advisor_Email__c);
-            
 			
             
-            //Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
-            //mail.SetSenderDisplayName('IT Support');
-            //mail.setToAddresses(emailAdds);
-            //mail.Subject = 'Multiple cases created alert message';
-            //mail.setPlainTextBody(messageToSend);
+			List<String> emailAdds = new List<String>();
+         // emailAdds.add(cl.Parent_Project_if_applicable__r.Resource_Coordinator_Email__c);
+         // emailAdds.add(cl.Parent_Project_if_applicable__r.Client_Advisor_Email__c);
+            emailAdds.add('smith.timothyh@gmail.com');
+            System.debug('Else Block ' + messageBody);
+            
+            Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
+            mail.SetSenderDisplayName('TEST IT Support');
+            mail.setToAddresses(emailAdds);
+            mail.Subject = 'TEST TEST Multiple cases created alert message';
+            mail.setPlainTextBody(messageBody);
 
-			/*
-            if (messageToSend != null) {
+			
+            if (messageBody != null) {
                 Messaging.sendEmail(new Messaging.SingleEmailMessage[] {
                     mail
                 });
             }
-			*/
+		
         }
     }
 
-
     
-		
 }

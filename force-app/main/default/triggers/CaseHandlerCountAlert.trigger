@@ -1,50 +1,94 @@
 trigger CaseHandlerCountAlert on Case (after insert) {
-    List<AggregateResult> AggregateResultList = [SELECT AccountId, Account.Name name, COUNT(Id) co,  Project__r.id,
-                                    Project__r.Implementation_status__c, Project__r.Client_Advisor_Email__c
-                                    FROM Case
-                                    WHERE CreatedDate = LAST_N_DAYS:5 AND Id IN :Trigger.New
-                                    GROUP BY AccountId, Account.Name
-                                    HAVING COUNT(Id)  >= 8
-                                    ];
-                                    
+ 		String messageToSend;
+    List < String > ListOfMessages = new List < String > ();
+    Set < Id > AcctIds = new Set < Id > ();
+    List < String > clientEmail;
+    String messageBody;
+    String mailGroup;
+    List < String > emailAdds;
 
-                for(AggregateResult aggr:AggregateResultList){ 
-                        system.debug(aggr);
+    List < AggregateResult > AggregateResultList = [SELECT AccountId, Account.Name name, COUNT(Id) co
+        FROM Case
+        WHERE CreatedDate = LAST_N_DAYS: 1
+        GROUP BY AccountId, Account.Name
+        HAVING COUNT(Id) = 1
+    ];
 
-                        Messaging.SingleEmailMessage message = new Messaging.SingleEmailMessage();
-                        
-                            if(Milestone1_Project__c.Implementation_status__c == 'LIVE - TRANSITION'){    
-                                // Set Outgoing Email to Implementation Coordinator
-                                //message.toAddresses = new String[] { 'test@test.com' }; 
-                            }
-                            else if (Milestone1_Project__c.Implementation_status__c == 'Live'){  
-                                // Private method *** getAddresses() *** retrieves email address from Customer_Success_Managers Public Group
-                                
-                                //message.toAddresses = new String[] { 'test@test.com' };
-                            } 
-                        message.Subject = 'Subject Test Message';
-                        message.PlainTextBody = 'Account name: ' + aggr.get('name') + ' has ' + (Integer)aggr.get('co') + ' cases opened in the last 8 days.';
-                        Messaging.SingleEmailMessage[] messages =   new List<Messaging.SingleEmailMessage> {message};
-                        Messaging.SendEmailResult[] results = Messaging.sendEmail(messages);
-                    System.debug('Account Name: ' + aggr.get('name'));   
-                }            
-                  
- 
+    Map < Id, String > accountIdEmailmessageMap = new Map < Id, String > ();
 
-private List<String> getAddresses(){
-    List<User> UserList =
-            [SELECT id, name, email
-            FROM User 
-            WHERE id 
-            IN (SELECT userorgroupid 
-                FROM groupmember
-                WHERE group.name = 'Customer Success Managers')];
+    for (AggregateResult aggr: AggregateResultList) {
+        String messageToSend = 'Account name: ' + aggr.get('name') +
+            ' has ' + (Integer) aggr.get('co') +
+            ' cases opened in the last 8 days.';
+        Id accId = (Id) aggr.get('AccountId');
+        accountIdEmailmessageMap.put(accId, messageToSend);
+        AcctIds.add(accId);
+    }
 
-    List<String> emailString = new List<String>();
 
-    for(User u: UserList){
-        emailstring.add(u.email);
-    }   
-    return (emailString);
-    }    
+    List < Case > caseList = [SELECT Id, AccountId, Account.Name, Parent_Project_if_applicable__r.Implementation_status__c,
+        Parent_Project_if_applicable__r.PM_Implementation_Status__c,
+        Parent_Project_if_applicable__r.RCM_Implementation_Status__c,
+        Parent_Project_if_applicable__r.Resource_Coordinator_Email__c,
+        Parent_Project_if_applicable__r.Client_Advisor_Email__c
+                              
+        FROM Case
+        WHERE AccountId IN: AcctIds
+    ];
+
+    for (Case cl: caseList) {
+
+        if (cl.Parent_Project_if_applicable__r.Implementation_status__c == 'Live - Closed Project' ||
+            cl.Parent_Project_if_applicable__r.PM_Implementation_Status__c == 'Live - Closed Project' ||
+            cl.Parent_Project_If_Applicable__r.RCM_Implementation_Status__c == 'Live - Closed Project') {
+
+
+            
+            
+            String messageBody = accountIdEmailmessageMap.get(cl.AccountId);
+			
+			System.debug('If Fired, CSM' + emailAdds);
+                System.debug('Resource Coord' + cl.Parent_Project_if_applicable__r.Resource_Coordinator_Email__c);
+                System.debug('If Fired, CSM' + cl.Parent_Project_if_applicable__r.Client_Advisor_Email__c);
+				
+                List<String> email = new List<String>();
+                email.add('smith.timothyh@gmail.com');
+            Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
+            mail.setSenderDisplayName('IT Support');
+            mail.setToAddresses(email);   //mailto:CustomerSuccessManagers@eyefinity.com
+            mail.Subject = 'Multiple cases created alert message';
+            mail.setPlainTextBody(messageBody);
+
+            if (messageToSend != null) {
+                Messaging.sendEmail(new Messaging.SingleEmailMessage[] {
+                    mail
+                });
+            }
+		
+        } else {
+
+			System.debug(cl.Parent_Project_if_applicable__r.Resource_Coordinator_Email__c);
+            System.debug(cl.Parent_Project_if_applicable__r.Client_Advisor_Email__c);
+            
+			
+            
+            //Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
+            //mail.SetSenderDisplayName('IT Support');
+            //mail.setToAddresses(emailAdds);
+            //mail.Subject = 'Multiple cases created alert message';
+            //mail.setPlainTextBody(messageToSend);
+
+			/*
+            if (messageToSend != null) {
+                Messaging.sendEmail(new Messaging.SingleEmailMessage[] {
+                    mail
+                });
+            }
+			*/
+        }
+    }
+
+
+    
+		
 }

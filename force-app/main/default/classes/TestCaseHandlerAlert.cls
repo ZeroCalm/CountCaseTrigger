@@ -39,7 +39,7 @@ private class TestCaseHandlerAlert {
         casesToInsert.add(c);
     }        
       
-      
+      insert casesToInsert;
     }
 
 	@isTest static void PassSendEmailIfBlock (){
@@ -47,11 +47,11 @@ private class TestCaseHandlerAlert {
         List<Case> testCases = [SELECT Id FROM Case WHERE AccountId IN :casesToInsert LIMIT 8];
 
       Test.startTest();
-        insert testCases
+        insert testCases;
       Test.stopTest();
     }    
     
-    @isTest static void PassOneRCMimpIfBlock (){
+    @isTest static void PassRCMimpIfBlock (){
         // Only RCM 'Live - Closed' to CSM
         List<Case> testCases = [SELECT Id FROM Case WHERE AccountId IN :casesToInsert LIMIT 8];
         List<Case> insertCases = new List<Case>();   
@@ -66,7 +66,7 @@ private class TestCaseHandlerAlert {
       Test.stopTest();
     }
 
-    @isTest static void PassOnePMimpIfBlock (){
+    @isTest static void PassPMimpIfBlock (){
         // Only PM 'Live - Closed' to CSM
         List<Case> testCases = [SELECT Id FROM Case WHERE AccountId IN :casesToInsert LIMIT 8];
         List<Case> insertCases = new List<Case>();   
@@ -81,13 +81,13 @@ private class TestCaseHandlerAlert {
       Test.stopTest();
     }
 
-    @isTest static void PassOnePMimpIfBlock (){
+    @isTest static void PassImpIfBlock (){
         // Only Imp 'Live - Closed' to CSM
         List<Case> testCases = [SELECT Id FROM Case WHERE AccountId IN :casesToInsert LIMIT 8];
         List<Case> insertCases = new List<Case>();   
             for(Case cas :testCases ){
                 cas.RCM_Implementation_Status__c = null;
-                cas.Implementation_Status__c = null;
+                cas.PM_Implementation_Status__c = null;
                 insertCases.add(cas);
             }
         
@@ -122,8 +122,6 @@ private class TestCaseHandlerAlert {
         insert insertCases;
       Test.stopTest();
     }
-
-
 }
 
 

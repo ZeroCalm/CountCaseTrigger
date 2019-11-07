@@ -9,9 +9,9 @@ trigger CaseHandlerCountAlert on Case (after insert) {
 
     List < AggregateResult > AggregateResultList = [SELECT AccountId, Account.Name name, COUNT(Id) co
         FROM Case
-        WHERE CreatedDate = LAST_N_DAYS: 1
+        WHERE CreatedDate = LAST_N_DAYS: 7
         GROUP BY AccountId, Account.Name
-        HAVING COUNT(Id) >= 3
+        HAVING COUNT(Id) >= 8
     ];
 
     Map < Id, String > accountIdEmailmessageMap = new Map < Id, String > ();
@@ -50,10 +50,9 @@ trigger CaseHandlerCountAlert on Case (after insert) {
 			
 				
                 List<String> email = new List<String>();
-            //    email.add('CustomerSuccessManagers@eyefinity.com');
-				email.add('tim.smith@vsp.com');
+                email.add('CustomerSuccessManagers@eyefinity.com');
             Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
-            mail.setSenderDisplayName('IT Support');
+            mail.setSenderDisplayName('eyeFinity Salesforce Support');
             mail.setToAddresses(email);   
             mail.Subject = 'Multiple cases created alert message';
             mail.setPlainTextBody(messageBody);
@@ -68,18 +67,14 @@ trigger CaseHandlerCountAlert on Case (after insert) {
 
         } else {
 
-			
-            
 			List<String> emailAdds = new List<String>();
-         // emailAdds.add(cl.Parent_Project_if_applicable__r.Resource_Coordinator_Email__c);
-         // emailAdds.add(cl.Parent_Project_if_applicable__r.Client_Advisor_Email__c);
-            emailAdds.add('smith.timothyh@gmail.com');
-            System.debug('Else Block ' + messageBody);
+            emailAdds.add(cl.Parent_Project_if_applicable__r.Resource_Coordinator_Email__c);
+            emailAdds.add(cl.Parent_Project_if_applicable__r.Client_Advisor_Email__c);
             
             Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
-            mail.SetSenderDisplayName('TEST IT Support');
+            mail.SetSenderDisplayName('eyeFinity Salesforce Support');
             mail.setToAddresses(emailAdds);
-            mail.Subject = 'TEST TEST Multiple cases created alert message';
+            mail.Subject = 'Multiple cases created alert message';
             mail.setPlainTextBody(messageBody);
 
 			
@@ -90,7 +85,5 @@ trigger CaseHandlerCountAlert on Case (after insert) {
             }
 		
         }
-    }
-
-    
+    }   
 }

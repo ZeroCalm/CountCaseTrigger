@@ -9,7 +9,7 @@ trigger CaseHandlerCountAlert on Case (after insert) {
 
     List < AggregateResult > AggregateResultList = [SELECT AccountId, Account.Name name, COUNT(Id) co
         FROM Case
-        WHERE CreatedDate = LAST_N_DAYS: 7
+        WHERE CreatedDate = LAST_N_DAYS: 7 AND Id IN :Trigger.New
         GROUP BY AccountId, Account.Name
         HAVING COUNT(Id) >= 8
     ];
@@ -40,17 +40,13 @@ trigger CaseHandlerCountAlert on Case (after insert) {
 
         if (cl.Parent_Project_if_applicable__r.Implementation_status__c == 'Live - Closed Project' ||
             cl.Parent_Project_if_applicable__r.PM_Implementation_Status__c == 'Live - Closed Project' ||
-            cl.Parent_Project_If_Applicable__r.RCM_Implementation_Status__c == 'Live - Closed Project') {
-
-
-            
+            cl.Parent_Project_If_Applicable__r.RCM_Implementation_Status__c == 'Live - Closed Project') {    
             
             String messageBody = accountIdEmailmessageMap.get(cl.AccountId);
-			System.debug('If Statement: ' + messageBody);
 			
-				
                 List<String> email = new List<String>();
                 email.add('CustomerSuccessManagers@eyefinity.com');
+                
             Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
             mail.setSenderDisplayName('eyeFinity Salesforce Support');
             mail.setToAddresses(email);   

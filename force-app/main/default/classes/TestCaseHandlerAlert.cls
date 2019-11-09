@@ -1,15 +1,15 @@
 @isTest
 private class TestCaseHandlerAlert {
 
-    @isTest static void setup (){
+    @isTest static void setup(){
         Account a = new Account();
-    a.RecordTypeId = '01230000000v58OAAQ';
-	a.name = 'testacct21';
+    		//a.RecordTypeId = '01230000000v58OAAQ';
+			a.name = 'testacct21';
  
   // Create parent Project
 
  Milestone1_Project__c project = new Milestone1_Project__c();
-		project.RecordTypeId = '01214000001RYp2AAG';
+		//project.RecordTypeId = '01214000001RYp2AAG';
 		project.Name = 'triggertest12';
 		project.RCM_Implementation_Status__c = 'LIVE - CLOSED PROJECT';
 		project.PM_Implementation_Status__c = 'LIVE - CLOSED PROJECT';
@@ -29,7 +29,7 @@ private class TestCaseHandlerAlert {
    
 	Case c = new Case();
 		c.AccountId = a.id;
-		c.RecordTypeId = '01214000001RYp7AAG';
+	//	c.RecordTypeId = '01214000001RYp7AAG';
 		c.Origin = 'Phone';
 		c.Impact__c = 'Low';
 		c.Severity__c = 'Minor';
@@ -37,91 +37,94 @@ private class TestCaseHandlerAlert {
 		c.Parent_Project_if_applicable__c = project.id;
  
         casesToInsert.add(c);
-    }        
-      
-      insert casesToInsert;
+    }          
+      insert casesToInsert;        
     }
 
 	@isTest static void PassSendEmailIfBlock (){
-        // Grab 8 Cases and Send 'Live - Closed Project' to CSM
-        List<Case> testCases = [SELECT Id FROM Case WHERE AccountId IN :casesToInsert LIMIT 8];
+        // Set 3/3 fields to 'Live - Closed Project' Send to Global Email Address
+        List<Case> testCases = [SELECT Id FROM Case WHERE Account.Name='testacct21' LIMIT 8];
 
       Test.startTest();
         insert testCases;
+        System.assertEquals(1, Limits.getEmailInvocations());
       Test.stopTest();
     }    
     
     @isTest static void PassRCMimpIfBlock (){
-        // Only RCM 'Live - Closed' to CSM
-        List<Case> testCases = [SELECT Id FROM Case WHERE AccountId IN :casesToInsert LIMIT 8];
+        // Set field number 1/3 to 'Live - Closed Project' Send to Global Email Address
+        List<Case> testCases = [SELECT Id FROM Case WHERE Account.Name='testacct21' LIMIT 8];
         List<Case> insertCases = new List<Case>();   
-            for(Case cas :testCases ){
-                cas.PM_Implementation_Status__c = null;
-                cas.Implementation_Status__c = null;
+            for(Case cas :testCases){
+                cas.Parent_Project_If_Applicable__r.PM_Implementation_Status__c = null;
+                cas.Parent_Project_If_Applicable__r.Implementation_Status__c = null;
                 insertCases.add(cas);
             }
 
       Test.startTest();
         insert insertCases;
+        System.assertEquals(1, Limits.getEmailInvocations());
       Test.stopTest();
     }
 
     @isTest static void PassPMimpIfBlock (){
-        // Only PM 'Live - Closed' to CSM
-        List<Case> testCases = [SELECT Id FROM Case WHERE AccountId IN :casesToInsert LIMIT 8];
+        // Set field number 2/3 to 'Live - Closed Project' Send to Global Email Address
+        List<Case> testCases = [SELECT Id FROM Case WHERE Account.Name='testacct21' LIMIT 8];
         List<Case> insertCases = new List<Case>();   
             for(Case cas :testCases ){
-                cas.RCM_Implementation_Status__c = null;
-                cas.Implementation_Status__c = null;
+                cas.Parent_Project_If_Applicable__r.RCM_Implementation_Status__c = null;
+                cas.Parent_Project_If_Applicable__r.Implementation_Status__c = null;
                 insertCases.add(cas);
             }
         
       Test.startTest();
         insert insertCases;
+        System.assertEquals(1, Limits.getEmailInvocations());
       Test.stopTest();
     }
 
     @isTest static void PassImpIfBlock (){
-        // Only Imp 'Live - Closed' to CSM
-        List<Case> testCases = [SELECT Id FROM Case WHERE AccountId IN :casesToInsert LIMIT 8];
+        // Set field number 3/3 to 'Live - Closed Project' Send to Global Email Address
+        List<Case> testCases = [SELECT Id FROM Case WHERE Account.Name='testacct21' LIMIT 8];
         List<Case> insertCases = new List<Case>();   
             for(Case cas :testCases ){
-                cas.RCM_Implementation_Status__c = null;
-                cas.PM_Implementation_Status__c = null;
+                cas.Parent_Project_If_Applicable__r.RCM_Implementation_Status__c = null;
+                cas.Parent_Project_If_Applicable__r.PM_Implementation_Status__c = null;
                 insertCases.add(cas);
             }
         
       Test.startTest();
         insert insertCases;
+        System.assertEquals(1, Limits.getEmailInvocations());
       Test.stopTest();
     }
 
-@isTest static void PassOnePMimpIfBlock (){
+@isTest static void DontSendIfBlock (){
         // Do not send, not enough Cases need 8 
-        List<Case> testCases = [SELECT Id FROM Case WHERE AccountId IN :casesToInsert LIMIT 5];
+        List<Case> testCases = [SELECT Id FROM Case WHERE Account.Name='testacct21' LIMIT 5];
         List<Case> insertCases = new List<Case>();   
        
       Test.startTest();
         insert insertCases;
+   		System.assertEquals(0, Limits.getEmailInvocations());
       Test.stopTest();
     }
 
 @isTest static void SendToElseBlock (){
         // Sends Email to Advisor and Coordinator
-        List<Case> testCases = [SELECT Id FROM Case WHERE AccountId IN :casesToInsert LIMIT 8];
+        List<Case> testCases = [SELECT Id FROM Case WHERE Account.Name='testacct21' LIMIT 8];
         List<Case> insertCases = new List<Case>();  
         for(Case cas :testCases ){
-                cas.RCM_Implementation_Status__c = null;
-                cas.Implementation_Status__c = null;
-                cas.PM_Implementation_Status__c = null;
+                cas.Parent_Project_If_Applicable__r.RCM_Implementation_Status__c = null;
+                cas.Parent_Project_If_Applicable__r.Implementation_Status__c = null;
+                cas.Parent_Project_If_Applicable__r.PM_Implementation_Status__c = null;
 
                 insertCases.add(cas);
             } 
        
       Test.startTest();
         insert insertCases;
+    	System.assertEquals(2, Limits.getEmailInvocations());
       Test.stopTest();
     }
 }
-
-

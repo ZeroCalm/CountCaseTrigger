@@ -45,7 +45,7 @@ trigger CaseHandlerCountAlert on Case (after insert) {
                 String messageBody = accountIdEmailmessageMap.get(cl.AccountId);
                 
                 List<String> emailaddr = new List<String>();
-                emailaddr.add('CustomerSuccessManagers@test.com');
+                emailaddr.add('CustomerSuccessManagers@test.com');  
                 
                 Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
                 mail.setSenderDisplayName('Support');
@@ -53,24 +53,28 @@ trigger CaseHandlerCountAlert on Case (after insert) {
                 mail.Subject = 'Multiple cases created alert message';
                 mail.setPlainTextBody(messageBody);
                 lstASingleEmailMessage.add(mail);
+               	
+                
+                
                 
             }else{
-                String amessageBody = accountIdEmailmessageMap.get(cl.AccountId);        
+                String messageBody = accountIdEmailmessageMap.get(cl.AccountId);        
                 
                 List<String> emailAdds = new List<String>();
                 emailAdds.add(cl.Parent_Project_if_applicable__r.Resource_Coordinator_Email__c);
-                emailAdds.add(cl.Parent_Project_if_applicable__r.Client_Advisor_Email__c);
+                emailAdds.add(cl.Parent_Project_if_applicable__r.Client_Advisor_Email__c); 
                 
                 Messaging.SingleEmailMessage amail = new Messaging.SingleEmailMessage();
                 amail.SetSenderDisplayName('Support');
                 amail.setToAddresses(emailAdds);
                 amail.Subject = 'Multiple cases created alert message';
-                amail.setPlainTextBody(amessageBody);
+                amail.setPlainTextBody(messageBody);
                 lstBSingleEmailMessage.add(amail);
+                System.debug('messageBody: ' + messageBody);
+                System.debug('email message: ' + amail);
                 
             }  
     }
     Messaging.SendEmailResult[] r = Messaging.sendEmail(lstASingleEmailMessage);
     Messaging.SendEmailResult[] rb = Messaging.sendEmail(lstBSingleEmailMessage);
-    
 }

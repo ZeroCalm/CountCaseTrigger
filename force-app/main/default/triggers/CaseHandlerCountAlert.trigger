@@ -1,4 +1,4 @@
-trigger CaseHandlerCountAlert on Case (after insert) {
+trigger CaseHandlerCountAlert on Case (after insert, after update) {
     
     //Case trigger that will send email alert when 8 cases are created within 7 days.
     String messageToSend;
@@ -23,8 +23,6 @@ trigger CaseHandlerCountAlert on Case (after insert) {
         accountIdEmailmessageMap.put(accId, messageToSend);
         AcctIds.add(accId);
     }
-    
-    
     List < Case > caseList = [SELECT Id, AccountId, Account.Name, Parent_Project_if_applicable__r.Implementation_status__c,
                               Parent_Project_if_applicable__r.PM_Implementation_Status__c,
                               Parent_Project_if_applicable__r.RCM_Implementation_Status__c,
@@ -45,10 +43,10 @@ trigger CaseHandlerCountAlert on Case (after insert) {
                 String messageBody = accountIdEmailmessageMap.get(cl.AccountId);
                 
                 List<String> emailaddr = new List<String>();
-                emailaddr.add('CustomerSuccessManagers@test.com');  
+                emailaddr.add('CustomerSuccessManagers@eyefinity.com');  
                 
                 Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
-                mail.setSenderDisplayName('Support');
+                mail.setSenderDisplayName('Eyefinity Salesforce Support');
                 mail.setToAddresses(emailaddr);   
                 mail.Subject = 'Multiple cases created alert message';
                 mail.setPlainTextBody(messageBody);
@@ -58,23 +56,22 @@ trigger CaseHandlerCountAlert on Case (after insert) {
                 
                 
             }else{
-                String messageBody = accountIdEmailmessageMap.get(cl.AccountId);        
+                String messageBody1 = accountIdEmailmessageMap.get(cl.AccountId);        
                 
                 List<String> emailAdds = new List<String>();
                 emailAdds.add(cl.Parent_Project_if_applicable__r.Resource_Coordinator_Email__c);
                 emailAdds.add(cl.Parent_Project_if_applicable__r.Client_Advisor_Email__c); 
                 
                 Messaging.SingleEmailMessage amail = new Messaging.SingleEmailMessage();
-                amail.SetSenderDisplayName('Support');
+                amail.SetSenderDisplayName('Eyefinity Salesforce Support');
                 amail.setToAddresses(emailAdds);
                 amail.Subject = 'Multiple cases created alert message';
-                amail.setPlainTextBody(messageBody);
+                amail.setPlainTextBody(messageBody1);
                 lstBSingleEmailMessage.add(amail);
-                System.debug('messageBody: ' + messageBody);
-                System.debug('email message: ' + amail);
+                
                 
             }  
     }
-    Messaging.SendEmailResult[] r = Messaging.sendEmail(lstASingleEmailMessage);
+    Messaging.SendEmailResult[] r = Messaging.sendEmail(lstASingleEmailMessage);   
     Messaging.SendEmailResult[] rb = Messaging.sendEmail(lstBSingleEmailMessage);
 }

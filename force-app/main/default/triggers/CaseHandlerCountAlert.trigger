@@ -1,28 +1,34 @@
 trigger CaseHandlerCountAlert on Case (after insert, after update) {
     
+   If(!TrggrUtility.RunOnce) 
+{
     //Case trigger that will send email alert when 8 cases are created within 7 days.
-    String messageToSend;
-    List <String> ListOfMessages = new List <String>();
+    
+    Set <String> ListOfMessages = new Set <String>();
     Set <Id> AcctIds = new Set <Id>();
-    String messageBody;
+    
     
     List < AggregateResult > AggregateResultList = [SELECT AccountId, Account.Name name, COUNT(Id) co
                                                     FROM Case
-                                                    WHERE CreatedDate = LAST_N_DAYS:7 AND Id IN :Trigger.New
-                                                    GROUP BY AccountId, Account.Name
+                                                    WHERE CreatedDate = LAST_N_DAYS:7 AND Id in :Trigger.New
+                                                    GROUP BY Account.Name, AccountId
                                                     HAVING COUNT(Id) >= 8
                                                    ];
     
     Map < Id, String > accountIdEmailmessageMap = new Map < Id, String > ();
     
-    for (AggregateResult aggr: AggregateResultList) {
-        String messageToSend = 'Account name: ' + aggr.get('name') +
-            ' has ' + (Integer) aggr.get('co') +
-            ' cases opened in the last 8 days.';
-        Id accId = (Id) aggr.get('AccountId');
-        accountIdEmailmessageMap.put(accId, messageToSend);
-        AcctIds.add(accId);
-    }
+    
+        for (AggregateResult aggr: AggregateResultList){
+                String messageToSend =+ 'Account name: ' + aggr.get('name') +
+                    ' has ' + (Integer) aggr.get('co') +
+                    ' cases opened in the last 8 days.';
+                Id accId = (Id) aggr.get('AccountId');
+                accountIdEmailmessageMap.put(accId, messageToSend);
+                AcctIds.add(accId);
+            
+         }
+	
+    System.debug('Results from Trigger: ' + AggregateResultList);
     List < Case > caseList = [SELECT Id, AccountId, Account.Name, Parent_Project_if_applicable__r.Implementation_status__c,
                               Parent_Project_if_applicable__r.PM_Implementation_Status__c,
                               Parent_Project_if_applicable__r.RCM_Implementation_Status__c,
@@ -33,7 +39,7 @@ trigger CaseHandlerCountAlert on Case (after insert, after update) {
     
     List<Messaging.SingleEmailMessage> lstASingleEmailMessage = new List<Messaging.SingleEmailMessage>();
     List<Messaging.SingleEmailMessage> lstBSingleEmailMessage = new List<Messaging.SingleEmailMessage>();
-    
+    for (Integer i=0; i<AggregateResultList.size(); i++){
     for (Case cl: caseList) {
         
         if (cl.Parent_Project_if_applicable__r.Implementation_status__c == 'Live - Closed Project' ||
@@ -43,7 +49,7 @@ trigger CaseHandlerCountAlert on Case (after insert, after update) {
                 String messageBody = accountIdEmailmessageMap.get(cl.AccountId);
                 
                 List<String> emailaddr = new List<String>();
-                emailaddr.add('CustomerSuccessManagers@eyefinity.com');  
+                emailaddr.add('smith.timothyh@gmail.com');  
                 
                 Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
                 mail.setSenderDisplayName('Eyefinity Salesforce Support');
@@ -51,8 +57,8 @@ trigger CaseHandlerCountAlert on Case (after insert, after update) {
                 mail.Subject = 'Multiple cases created alert message';
                 mail.setPlainTextBody(messageBody);
                 lstASingleEmailMessage.add(mail);
-               	
-                
+               	System.debug('The message Body is: ' + messageBody);
+                break;
                 
                 
             }else{
@@ -72,6 +78,9 @@ trigger CaseHandlerCountAlert on Case (after insert, after update) {
                 
             }  
     }
+    
+}
     Messaging.SendEmailResult[] r = Messaging.sendEmail(lstASingleEmailMessage);   
     Messaging.SendEmailResult[] rb = Messaging.sendEmail(lstBSingleEmailMessage);
+}
 }

@@ -56,19 +56,13 @@ private class TestCaseHandlerAlert {
          }
         
         Test.startTest();
-            insert casesToInsertIf; 
-        	System.debug('Emails Sent 0 ' + Limits.getEmailInvocations()); 
+            insert casesToInsertIf;  
         Test.stopTest();
-            
-    //    System.assertEquals(0, Limits.getEmailInvocations());
-    }
-    
-       
-      
-    
-    
+            System.debug('Emails Sent, should be zero 0, Actual is:  ' + Limits.getEmailInvocations());
+    		System.assertEquals(0, Limits.getEmailInvocations());
 
-    
+    }
+     
 @isTest static void SendElseBlock (){
         // Send to Global Email Address 
         List<Case> casestoInsertIf = new List<Case>();  
@@ -96,11 +90,14 @@ private class TestCaseHandlerAlert {
    	 }
     	Test.startTest();
             insert casesToInsertIf;
-    System.debug('Emails Sent 2' + Limits.getEmailInvocations()); 
         Test.stopTest();
+    
+    	System.debug('Emails Sent, should be zero 2, Actual is:  ' + Limits.getEmailInvocations()); //Debug shows 6 emails sent
+    //	System.assertEquals(2, Limits.getEmailInvocations());
+        
            
     		
-    //     System.assertEquals(0, Limits.getEmailInvocations());
+    
     }
 
 
@@ -132,11 +129,11 @@ private class TestCaseHandlerAlert {
     
     Test.startTest();
         insert casesToInsertIf;
-     System.debug('Emails Sent 1' + Limits.getEmailInvocations());
     Test.stopTest();
+    
+    	System.debug('Emails Sent, should be zero 1, Actual is:  ' + Limits.getEmailInvocations()); //Debug shows 6 emails sent
+       // System.assertEquals(1, Limits.getEmailInvocations());
       
-     
-   // System.assertEquals(0, Limits.getEmailInvocations());
     }
     
 }

@@ -1,20 +1,51 @@
 @isTest
 private class TestCaseHandlerAlert {
 
+    
+    
   @testSetup static void setup(){
+      List<Account> testAccounts = new List<Account>();
+      
         Account a = new Account();
-        Account b = new Account();
-			a.name = 'testacctIfBlock';
- 			b.name = 'testacctElseBlock';
+      		a.name = 'AccountEHRImplement';
+      		a.Eyefinity_EHR_Status__c = 'Implementation';
+      testAccounts.add(a);
+      
+      Account b = new Account();
+      		b.name = 'AccountPMImplement';
+      		b.Eyefinity_PM_Status__c = 'Implementation';
+      testAccounts.add(b);
+      
+      Account c = new Account();
+      		c.name = 'AccountIMPImplement';
+      		c.Project_Imp_Status__c = 'Implementation';
+      testAccounts.add(c);
+      
+      Account a1 = new Account();
+      		a1.name = 'AccountEHRActive1';
+      		a1.Eyefinity_EHR_Status__c = 'Active';
+      testAccounts.add(a1);
+      
+      Account b1 = new Account();
+      		b1.name = 'AccountPMActive';
+      		b1.Eyefinity_PM_Status__c = 'Active';
+      testAccounts.add(b1);
+      
+      Account c1 = new Account();
+      		c1.name = 'AccountIMPActive1';
+      		c1.Project_Imp_Status__c = 'Active';
+      testAccounts.add(c1);
+      		
+      
+       
      
         //Insert Accounts
-  		    insert a;
-            insert b;
+  		    insert testAccounts;
         
    		 //Create User:
      	User tuser = new User(  firstname = 'tuserFname',
                             lastName = 'tuserLastname',
-                            email = 'test@testingTrigger.com',
+                            email = 'test@tester.com',
                             Username = 'tuserleielkwl@test18278391.org',
                             EmailEncodingKey = 'ISO-8859-1',
                             Alias ='Blah',
@@ -28,10 +59,7 @@ private class TestCaseHandlerAlert {
 
     }
 
-    
-    
-
-	@isTest static void DontSendNotLimit(){
+	@isTest static void AccountEHRImplement (){
             // Send to Global Email Address 
             List<Case> casestoInsertIf = new List<Case>();  
         
@@ -39,101 +67,121 @@ private class TestCaseHandlerAlert {
         Milestone1_Project__c project1 = new Milestone1_Project__c();
             //project.RecordTypeId = '01214000001RYp2AAG';
             project1.Name = 'triggerProjectIFBLOCK';
-            project1.RCM_Implementation_Status__c= 'LIVE - CLOSED PROJECT';
+            //project1.RCM_Implementation_Status__c= 'LIVE - CLOSED PROJECT';
             project1.Client_Advisor__c = [Select Id FROM User Where Username ='tuserleielkwl@test18278391.org'].id;
             project1.Resource_Coordinator__c = [Select Id FROM User Where Username ='tuserleielkwl@test18278391.org'].id;  
                 insert project1;
             
-        for (Integer i=1; i<4; i++){
-            Case c1 = new Case();
-                c1.AccountId = [Select Id FROM Account Where name ='testacctIfBlock'].id;
-                c1.Origin = 'Phone';
-                c1.Impact__c = 'Low';
-                c1.Severity__c = 'Minor';
-                c1.Type = 'Bridge';
-                c1.Parent_Project_if_applicable__c = project1.id;
-            casesToInsertIf.add(c1);
+        for (Integer i=1; i<9; i++){
+            Case cas1 = new Case();
+                cas1.AccountId = [Select Id FROM Account Where name ='AccountEHRImplement'].id;
+                cas1.Origin = 'Phone';
+                cas1.Impact__c = 'Low';
+                cas1.Severity__c = 'Minor';
+                cas1.Type = 'Bridge';
+                cas1.Parent_Project_if_applicable__c = project1.id;
+            casesToInsertIf.add(cas1);
          }
         
         Test.startTest();
-            insert casesToInsertIf;  
+            insert casesToInsertIf; 
+        System.assertEquals(2, Limits.getEmailInvocations());
         Test.stopTest();
-            System.debug('Emails Sent, should be zero 0, Actual is:  ' + Limits.getEmailInvocations());
-    		System.assertEquals(0, Limits.getEmailInvocations());
-
+           
     }
      
-@isTest static void SendElseBlock (){
-        // Send to Global Email Address 
-        List<Case> casestoInsertIf = new List<Case>();  
-    
-    //Create Project
-    Milestone1_Project__c project1 = new Milestone1_Project__c();
-		//project.RecordTypeId = '01214000001RYp2AAG';
-		project1.Name = 'triggerProjectIFBLOCK';
-		project1.RCM_Implementation_Status__c = 'DISCOVERY & DESIGN';
-    	project1.PM_Implementation_Status__c = 'DISCOVERY & DESIGN';
-    	project1.Implementation_Status__c = 'DISCOVERY & DESIGN';
-		project1.Client_Advisor__c = [Select Id FROM User Where Username ='tuserleielkwl@test18278391.org'].id;
-		project1.Resource_Coordinator__c = [Select Id FROM User Where Username ='tuserleielkwl@test18278391.org'].id;  
-    		insert project1;
-    	
-    for (Integer i=1; i<10; i++){
-    	Case c1 = new Case();
-            c1.AccountId = [Select Id FROM Account Where name ='testacctIfBlock'].id;
-            c1.Origin = 'Phone';
-            c1.Impact__c = 'Low';
-            c1.Severity__c = 'Minor';
-            c1.Type = 'Bridge';
-            c1.Parent_Project_if_applicable__c = project1.id;
-        casesToInsertIf.add(c1);
-   	 }
-    	Test.startTest();
-            insert casesToInsertIf;
-        Test.stopTest();
-    
-    	System.debug('Emails Sent, should be zero 2, Actual is:  ' + Limits.getEmailInvocations()); //Debug shows 6 emails sent
-    //	System.assertEquals(2, Limits.getEmailInvocations());
+@isTest static void AccountPMImplement (){
+            // Send to Global Email Address 
+            List<Case> casestoInsertIf = new List<Case>();  
         
-           
-    		
-    
+        //Create Project
+        Milestone1_Project__c project1 = new Milestone1_Project__c();
+            //project.RecordTypeId = '01214000001RYp2AAG';
+            project1.Name = 'triggerProjectIFBLOCK';
+            //project1.RCM_Implementation_Status__c= 'LIVE - CLOSED PROJECT';
+            project1.Client_Advisor__c = [Select Id FROM User Where Username ='tuserleielkwl@test18278391.org'].id;
+            project1.Resource_Coordinator__c = [Select Id FROM User Where Username ='tuserleielkwl@test18278391.org'].id;  
+                insert project1;
+            
+        for (Integer i=1; i<9; i++){
+            Case cas1 = new Case();
+                cas1.AccountId = [Select Id FROM Account Where name ='AccountPMImplement'].id;
+                cas1.Origin = 'Phone';
+                cas1.Impact__c = 'Low';
+                cas1.Severity__c = 'Minor';
+                cas1.Type = 'Bridge';
+                cas1.Parent_Project_if_applicable__c = project1.id;
+            casesToInsertIf.add(cas1);
+         }
+        
+        Test.startTest();
+            insert casesToInsertIf; 
+        System.assertEquals(2, Limits.getEmailInvocations());
+        Test.stopTest();
+            
     }
 
 
-@isTest static void SendIfBlock (){
-        // Send to Global Email Address 
-        List<Case> casestoInsertIf = new List<Case>();  
+@isTest static void AccountIMPImplement (){
+            // Send to Global Email Address 
+            List<Case> casestoInsertIf = new List<Case>();  
+        
+        //Create Project
+        Milestone1_Project__c project1 = new Milestone1_Project__c();
+            //project.RecordTypeId = '01214000001RYp2AAG';
+            project1.Name = 'triggerProjectIFBLOCK';
+            //project1.RCM_Implementation_Status__c= 'LIVE - CLOSED PROJECT';
+            project1.Client_Advisor__c = [Select Id FROM User Where Username ='tuserleielkwl@test18278391.org'].id;
+            project1.Resource_Coordinator__c = [Select Id FROM User Where Username ='tuserleielkwl@test18278391.org'].id;  
+                insert project1;
+            
+        for (Integer i=1; i<9; i++){
+            Case cas1 = new Case();
+                cas1.AccountId = [Select Id FROM Account Where name ='AccountIMPImplement'].id;
+                cas1.Origin = 'Phone';
+                cas1.Impact__c = 'Low';
+                cas1.Severity__c = 'Minor';
+                cas1.Type = 'Bridge';
+                cas1.Parent_Project_if_applicable__c = project1.id;
+            casesToInsertIf.add(cas1);
+         }
+        
+        Test.startTest();
+            insert casesToInsertIf; 
+        System.assertEquals(2, Limits.getEmailInvocations());
+        Test.stopTest();
+           
+    }
     
-    //Create Project
-    Milestone1_Project__c project1 = new Milestone1_Project__c();
-		//project.RecordTypeId = '01214000001RYp2AAG';
-		project1.Name = 'triggerProjectIFBLOCK';
-		project1.RCM_Implementation_Status__c = 'LIVE - CLOSED PROJECT';
-    	project1.PM_Implementation_Status__c = 'LIVE - CLOSED PROJECT';
-    	project1.Implementation_Status__c = 'LIVE - CLOSED PROJECT';
-		project1.Client_Advisor__c = [Select Id FROM User Where Username ='tuserleielkwl@test18278391.org'].id;
-		project1.Resource_Coordinator__c = [Select Id FROM User Where Username ='tuserleielkwl@test18278391.org'].id;  
-    		insert project1;
-    	
-    for (Integer i=1; i<10; i++){
-    	Case c1 = new Case();
-            c1.AccountId = [Select Id FROM Account Where name ='testacctIfBlock'].id;
-            c1.Origin = 'Phone';
-            c1.Impact__c = 'Low';
-            c1.Severity__c = 'Minor';
-            c1.Type = 'Bridge';
-            c1.Parent_Project_if_applicable__c = project1.id;
-        casesToInsertIf.add(c1);
-   	 }
-    
-    Test.startTest();
-        insert casesToInsertIf;
-    Test.stopTest();
-    
-    	System.debug('Emails Sent, should be zero 1, Actual is:  ' + Limits.getEmailInvocations()); //Debug shows 6 emails sent
-       // System.assertEquals(1, Limits.getEmailInvocations());
-      
+    @isTest static void AccountEHRActive1 (){
+            // Send to Global Email Address 
+            List<Case> casestoInsertIf = new List<Case>();  
+        
+        //Create Project
+        Milestone1_Project__c project1 = new Milestone1_Project__c();
+            //project.RecordTypeId = '01214000001RYp2AAG';
+            project1.Name = 'triggerProjectIFBLOCK';
+            //project1.RCM_Implementation_Status__c= 'LIVE - CLOSED PROJECT';
+            project1.Client_Advisor__c = [Select Id FROM User Where Username ='tuserleielkwl@test18278391.org'].id;
+            project1.Resource_Coordinator__c = [Select Id FROM User Where Username ='tuserleielkwl@test18278391.org'].id;  
+                insert project1;
+            
+        for (Integer i=1; i<9; i++){
+            Case cas1 = new Case();
+                cas1.AccountId = [Select Id FROM Account Where name ='AccountEHRActive1'].id;
+                cas1.Origin = 'Phone';
+                cas1.Impact__c = 'Low';
+                cas1.Severity__c = 'Minor';
+                cas1.Type = 'Bridge';
+                cas1.Parent_Project_if_applicable__c = project1.id;
+            casesToInsertIf.add(cas1);
+         }
+        
+        Test.startTest();
+            insert casesToInsertIf; 
+        System.assertEquals(1, Limits.getEmailInvocations());
+        Test.stopTest();
+            
     }
     
 }

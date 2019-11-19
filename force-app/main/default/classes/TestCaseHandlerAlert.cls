@@ -60,7 +60,7 @@ private class TestCaseHandlerAlert {
     }
 
 	@isTest static void AccountEHRImplement (){
-            // Send to Global Email Address 
+            
             List<Case> casestoInsertIf = new List<Case>();  
         
         //Create Project
@@ -72,7 +72,7 @@ private class TestCaseHandlerAlert {
             project1.Resource_Coordinator__c = [Select Id FROM User Where Username ='tuserleielkwl@test18278391.org'].id;  
                 insert project1;
             
-        for (Integer i=1; i<9; i++){
+        for (Integer i=1; i<10; i++){
             Case cas1 = new Case();
                 cas1.AccountId = [Select Id FROM Account Where name ='AccountEHRImplement'].id;
                 cas1.Origin = 'Phone';
@@ -103,7 +103,7 @@ private class TestCaseHandlerAlert {
             project1.Resource_Coordinator__c = [Select Id FROM User Where Username ='tuserleielkwl@test18278391.org'].id;  
                 insert project1;
             
-        for (Integer i=1; i<9; i++){
+        for (Integer i=1; i<10; i++){
             Case cas1 = new Case();
                 cas1.AccountId = [Select Id FROM Account Where name ='AccountPMImplement'].id;
                 cas1.Origin = 'Phone';
@@ -135,7 +135,7 @@ private class TestCaseHandlerAlert {
             project1.Resource_Coordinator__c = [Select Id FROM User Where Username ='tuserleielkwl@test18278391.org'].id;  
                 insert project1;
             
-        for (Integer i=1; i<9; i++){
+        for (Integer i=1; i<10; i++){
             Case cas1 = new Case();
                 cas1.AccountId = [Select Id FROM Account Where name ='AccountIMPImplement'].id;
                 cas1.Origin = 'Phone';
@@ -150,7 +150,7 @@ private class TestCaseHandlerAlert {
             insert casesToInsertIf; 
         System.assertEquals(2, Limits.getEmailInvocations());
         Test.stopTest();
-           
+            
     }
     
     @isTest static void AccountEHRActive1 (){
@@ -166,7 +166,7 @@ private class TestCaseHandlerAlert {
             project1.Resource_Coordinator__c = [Select Id FROM User Where Username ='tuserleielkwl@test18278391.org'].id;  
                 insert project1;
             
-        for (Integer i=1; i<9; i++){
+        for (Integer i=1; i<10; i++){
             Case cas1 = new Case();
                 cas1.AccountId = [Select Id FROM Account Where name ='AccountEHRActive1'].id;
                 cas1.Origin = 'Phone';
@@ -179,7 +179,7 @@ private class TestCaseHandlerAlert {
         
         Test.startTest();
             insert casesToInsertIf; 
-        System.assertEquals(1, Limits.getEmailInvocations());
+        System.assertEquals(2, Limits.getEmailInvocations());
         Test.stopTest();
             
     }
